@@ -1,4 +1,4 @@
-package com.ort;
+package com.ort.smartacc;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;
