@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:weightSum="1">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Por nombre:"
+        android:id="@+id/lblNombre"
+        android:textSize="20dp"
+        android:textStyle="bold"
+        android:layout_marginLeft="36dp"
+        android:layout_marginTop="20dp" />
+
+    <EditText
+        android:layout_width="320dp"
+        android:layout_height="wrap_content"
+        android:text="Nombre"
+        android:ems="10"
+        android:id="@+id/txtName"
+        android:inputType="textPersonName"
+        android:layout_gravity="center_horizontal|top"
+        android:layout_margin="0dp"
+        android:editable="false"
+        android:textSize="20dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Por ingredientes:"
+        android:id="@+id/lblIngredientes"
+        android:textSize="20dp"
+        android:textStyle="bold"
+        android:layout_marginLeft="36dp"
+        android:layout_marginTop="20dp" />
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="183dp"
+        android:layout_weight="0.06">
+
+        <ExpandableListView
+            android:layout_width="wrap_content"
+            android:layout_height="200dp"
+            android:id="@+id/elvCategories"
+            android:indicatorLeft="?android:attr/expandableListPreferredItemIndicatorLeft"
+            android:layout_gravity="center_horizontal"
+            android:layout_weight="0.05"
+            android:childDivider="#000000"
+            android:divider="#000000"
+            android:dividerHeight="0.5dp"
+            />
+    </FrameLayout>
+
+</LinearLayout>

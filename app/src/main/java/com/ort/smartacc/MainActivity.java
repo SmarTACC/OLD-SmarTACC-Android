@@ -83,9 +83,20 @@ public class MainActivity extends AppCompatActivity
     public void onNavigationDrawerItemSelected(int position) {
         // update the main content by replacing fragments
         FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager.beginTransaction()
-                .replace(com.ort.smartacc.R.id.container, PlaceholderFragment.newInstance(position + 1))
-                .commit();
+        switch (position)
+        {
+            default:
+                fragmentManager.beginTransaction()
+                        .replace(com.ort.smartacc.R.id.container, PlaceholderFragment.newInstance(position + 1))
+                        .commit();
+                break;
+            case 1:
+                fragmentManager.beginTransaction()
+                        .replace(com.ort.smartacc.R.id.container, new FragmentSearch())
+                        .commit();
+                break;
+        }
+
     }
 
     public void onSectionAttached(int number) {
@@ -147,6 +158,7 @@ public class MainActivity extends AppCompatActivity
          * fragment.
          */
         private static final String ARG_SECTION_NUMBER = "section_number";
+        private int sectionNumber = 0;
 
         /**
          * Returns a new instance of this fragment for the given section
@@ -173,8 +185,8 @@ public class MainActivity extends AppCompatActivity
         @Override
         public void onAttach(Activity activity) {
             super.onAttach(activity);
-            ((MainActivity) activity).onSectionAttached(
-                    getArguments().getInt(ARG_SECTION_NUMBER));
+
+            ((MainActivity) activity).onSectionAttached(getArguments().getInt(ARG_SECTION_NUMBER));
         }
     }
 
