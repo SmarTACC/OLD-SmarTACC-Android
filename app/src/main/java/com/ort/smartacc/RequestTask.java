@@ -15,8 +15,10 @@ import java.net.URL;
  */
 class RequestTask extends AsyncTask<String, Void, String> {
     Context context;
-    public RequestTask(Context context){
+    OnReadyCallback callback;
+    public RequestTask(Context context, OnReadyCallback callback){
         this.context=context;
+        this.callback = callback;
     }
     /**
      * Task principal. Manda el requerimiento a la url pasada como parámetro y devuelve la respuesta del servidor.
@@ -55,11 +57,16 @@ class RequestTask extends AsyncTask<String, Void, String> {
 
     /**
      * Ejecutado luego del doInBackground.
-     * Devuelve la respuesta del servidor.
+     * Devuelve la respuesta del servidor al callback.
      * @param result Respuesta del servidor.
      */
     @Override
     protected void onPostExecute(String result) {
+        callback.onReady(result);
         super.onPostExecute(result);
+    }
+
+    interface OnReadyCallback{
+        void onReady(String response);
     }
 }

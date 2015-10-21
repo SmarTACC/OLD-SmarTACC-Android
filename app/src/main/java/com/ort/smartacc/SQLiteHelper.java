@@ -10,7 +10,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Iterator;
-import java.util.concurrent.ExecutionException;
 
 public class SQLiteHelper extends SQLiteOpenHelper{
 
@@ -81,48 +80,53 @@ public class SQLiteHelper extends SQLiteOpenHelper{
         }
         update(db);
     }
-    void update(SQLiteDatabase db){
+    void update(final SQLiteDatabase db){
         //Actualizo cada tabla
-        for(String TABLE : TABLES) {
+        for(final String TABLE : TABLES) {
             //Mando un requerimiento para conseguir esa tabla
-            RequestTask taskRecetas = (RequestTask) new RequestTask(context).execute(Util.SERVER_URL+"json/" + TABLE + ".php");
-            try {
-                //Consigo la respuesta
-                String response = taskRecetas.get();
-                if (response != null) {
-                    //Parseo la respuesta en JSON, formando un array de rows
-                    JSONArray array = new JSONArray(response);
+            new RequestTask(context, new RequestTask.OnReadyCallback() {
+                @Override
+                public void onReady(String response) {
+                    try{
+                        if (response != null) {
+                            //Parseo la respuesta en JSON, formando un array de rows
+                            JSONArray array = new JSONArray(response);
 
-                    //Recorro el array
-                    for (int i = 0; i < array.length(); i++) {
-                        //Consigo cada row, la cual va a tener varios pares de nombre:valor
-                        JSONObject objRecetas = array.getJSONObject(i);
-                        //El ContentValues se usa para insertar las columnas
-                        ContentValues values = new ContentValues();
-                        //Iterator para recorrer las columnas de la row
-                        Iterator<String> it = objRecetas.keys();
+                            //Recorro el array
+                            for (int i = 0; i < array.length(); i++) {
+                                //Consigo cada row, la cual va a tener varios pares de nombre:valor
+                                JSONObject objRecetas = array.getJSONObject(i);
+                                //El ContentValues se usa para insertar las columnas
+                                ContentValues values = new ContentValues();
+                                //Iterator para recorrer las columnas de la row
+                                Iterator<String> it = objRecetas.keys();
 
-                        //Recorro todos los pares de nombre:valor
-                        while (it.hasNext()) {
-                            String name = it.next();
+                                //Recorro todos los pares de nombre:valor
+                                while (it.hasNext()) {
+                                    String name = it.next();
 
-                            switch (name) {
-                                case "Texto":case "Imagen":case "Nombre":case "Unidad":
-                                    values.put(name, objRecetas.getString(name));
-                                    break;
-                                case "Cantidad":
-                                    values.put(name, objRecetas.getDouble(name));
-                                    break;
-                                default:
-                                    values.put(name, objRecetas.getInt(name));
+                                    switch (name) {
+                                        case "Texto":
+                                        case "Imagen":
+                                        case "Nombre":
+                                        case "Unidad":
+                                            values.put(name, objRecetas.getString(name));
+                                            break;
+                                        case "Cantidad":
+                                            values.put(name, objRecetas.getDouble(name));
+                                            break;
+                                        default:
+                                            values.put(name, objRecetas.getInt(name));
+                                    }
+                                }
+                                db.insert(TABLE, null, values);
                             }
                         }
-                        db.insert(TABLE,null,values);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
                     }
                 }
-            } catch (JSONException | InterruptedException | ExecutionException e) {
-                e.printStackTrace();
-            }
+            }).execute(Util.SERVER_URL+"json/" + TABLE + ".php");
         }
     }
     public static int getVersion(Context context){

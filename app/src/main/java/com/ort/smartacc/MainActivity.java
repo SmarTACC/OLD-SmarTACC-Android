@@ -15,8 +15,6 @@ import android.view.ViewGroup;
 import android.support.v4.widget.DrawerLayout;
 import android.widget.Toast;
 
-import java.util.concurrent.ExecutionException;
-
 
 public class MainActivity extends AppCompatActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks {
@@ -66,20 +64,17 @@ public class MainActivity extends AppCompatActivity
                 (DrawerLayout) findViewById(com.ort.smartacc.R.id.drawer_layout));
 
         //Hago un request al servidor para conseguir la version de la DB
-        RequestTask versionTask= (RequestTask) new RequestTask(MainActivity.this).execute(Util.SERVER_URL + "json/version.php");
-
-        try {
-            String serverVersion = versionTask.get();
-            SQLiteHelper helper;
-            //Si la version es null es porque hubo internet, uso el numero de version que ya tenia
-            if(serverVersion!=null){
-                dataBase = new SQLiteHelper(MainActivity.this, Integer.parseInt(serverVersion)).getReadableDatabase();
-            } else{
-                dataBase = new SQLiteHelper(MainActivity.this, SQLiteHelper.getVersion(MainActivity.this)).getReadableDatabase();
+        new RequestTask(this, new RequestTask.OnReadyCallback() {
+            @Override
+            public void onReady(String response) {
+                dataBase = new SQLiteHelper(MainActivity.this,
+                        (response!=null)?
+                                Integer.parseInt(response):
+                                SQLiteHelper.getVersion(MainActivity.this)).getReadableDatabase();
+                Toast.makeText(MainActivity.this, "Database ready", Toast.LENGTH_SHORT).show();
             }
-        } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
-        }
+        }).execute(Util.SERVER_URL + "json/version.php");
+
     }
 
     @Override
