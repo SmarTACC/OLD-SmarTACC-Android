@@ -14,13 +14,18 @@ import java.util.concurrent.ExecutionException;
 
 public class SQLiteHelper extends SQLiteOpenHelper{
 
-    //Nombre de la base de datos
+    /**
+     * Nombre de la base de datos
+     */
     public static String DB_NAME = "smartacc";
-    //Nombres de las tablas
+    /**
+     * Nombres de las tablas
+     */
     public static String[] TABLES = {"recetas", "tags", "ingredientes", "tagrec", "ingrec"};
-    //URL al servidor, TODO: cambiar esto por la url de ORT
-    static String SERVER_URL = "http://santiaranguri.com/smartacc/json/";
-    //Strings para crear las tablas
+    /**
+     * Strings para crear las tablas
+     * Los valores son int, excepto:Texto, Imagen, Nombre, Unidad (son String) y Cantidad (es float)
+     */
     static String[] CREATE_TABLES ={"CREATE TABLE IF NOT EXISTS `recetas` (" +
             "  `IDRecetas` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT," +
             "  `Texto` varchar(2048) NOT NULL," +
@@ -49,9 +54,13 @@ public class SQLiteHelper extends SQLiteOpenHelper{
             "  `Unidad` varchar(30) NOT NULL," +
             "  `IDIngrec` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT" +
             ")"};
-    //Los valores son int, excepto:Texto, Imagen, Nombre, Unidad (son String) y Cantidad (es float)
+    /**
+     * Context usado para distintas acciones.
+     */
+    Context context;
     public SQLiteHelper(Context context, int version) {
         super(context, DB_NAME, null, version);
+        this.context = context;
     }
 
     @Override
@@ -72,11 +81,11 @@ public class SQLiteHelper extends SQLiteOpenHelper{
         }
         update(db);
     }
-    static void update(SQLiteDatabase db){
+    void update(SQLiteDatabase db){
         //Actualizo cada tabla
         for(String TABLE : TABLES) {
             //Mando un requerimiento para conseguir esa tabla
-            RequestTask taskRecetas = (RequestTask) new RequestTask().execute(SERVER_URL + TABLE + ".php");
+            RequestTask taskRecetas = (RequestTask) new RequestTask(context).execute(Util.SERVER_URL+"json/" + TABLE + ".php");
             try {
                 //Consigo la respuesta
                 String response = taskRecetas.get();

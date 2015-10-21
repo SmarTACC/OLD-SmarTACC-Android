@@ -1,5 +1,6 @@
 package com.ort.smartacc;
 
+import android.content.Context;
 import android.os.AsyncTask;
 
 import java.io.BufferedReader;
@@ -9,23 +10,37 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+/**
+ * AsyncTask usado para mandar requerimientos HTTP GET.
+ */
 class RequestTask extends AsyncTask<String, Void, String> {
+    Context context;
+    public RequestTask(Context context){
+        this.context=context;
+    }
+    /**
+     * Task principal. Manda el requerimiento a la url pasada como parámetro y devuelve la respuesta del servidor.
+     * @param url Url a la que se mandará el requerimiento.
+     * @return Respuesta del servidor.
+     */
     @Override
-    protected String doInBackground(String... uri) {
+    protected String doInBackground(String... url) {
         String responseString=null;
         HttpURLConnection connection=null;
         try {
-            connection = (HttpURLConnection) new URL(uri[0]).openConnection();
-            if(connection.getResponseCode()==200){
-                InputStream inputStream = connection.getInputStream();
-                BufferedReader bufferedReader = new BufferedReader( new InputStreamReader(inputStream));
-                String line;
-                StringBuilder result = new StringBuilder();
-                while((line = bufferedReader.readLine()) != null){
-                    result.append(line);
+            if(Util.canConnect(context)) {
+                connection = (HttpURLConnection) new URL(url[0]).openConnection();
+                if (connection.getResponseCode() == 200) {
+                    InputStream inputStream = connection.getInputStream();
+                    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+                    String line;
+                    StringBuilder result = new StringBuilder();
+                    while ((line = bufferedReader.readLine()) != null) {
+                        result.append(line);
+                    }
+                    responseString = result.toString();
+                    inputStream.close();
                 }
-                responseString = result.toString();
-                inputStream.close();
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -38,9 +53,13 @@ class RequestTask extends AsyncTask<String, Void, String> {
         return responseString;
     }
 
+    /**
+     * Ejecutado luego del doInBackground.
+     * Devuelve la respuesta del servidor.
+     * @param result Respuesta del servidor.
+     */
     @Override
     protected void onPostExecute(String result) {
         super.onPostExecute(result);
-        //Do anything with response..
     }
 }

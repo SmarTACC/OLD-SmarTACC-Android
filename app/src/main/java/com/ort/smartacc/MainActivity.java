@@ -1,6 +1,7 @@
 package com.ort.smartacc;
 
 import android.app.Activity;
+import android.database.sqlite.SQLiteDatabase;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -29,45 +30,31 @@ public class MainActivity extends AppCompatActivity
      * Used to store the last screen title. For use in {@link #restoreActionBar()}.
      */
     private CharSequence mTitle;
+    /**
+     * Instancia en modo solo lectura de la base de datos.
+     * Hay que verificar que no sea null!
+     * Un ejemplo básico de una consulta (SELECT Cantidad FROM tagrec)
+         PARA SQL PURO USAR .rawQuery
+
+         String[] col ={"Cantidad"};
+         Cursor c = dataBase.query(SQLiteHelper.TABLES[4],col,null,null,null,null,null);
+         while(!c.isLast()){
+         c.moveToNext();
+         for(int i =0; i<c.getColumnCount();i++){
+         TextView tv = new TextView(this);
+         tv.setText(""+c.getFloat(i));
+         layout.addView(tv);
+         }
+         }
+         c.close();
+     */
+    SQLiteDatabase dataBase;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(com.ort.smartacc.R.layout.activity_drawer);
 
-        //Hago un request al servidor para conseguir la version de la DB
-        RequestTask versionTask= (RequestTask) new RequestTask().execute(SQLiteHelper.SERVER_URL + "version.php");
-
-        try {
-            String serverVersion = versionTask.get();
-            SQLiteHelper helper;
-            //Si la version es null es porque hubo internet, uso el numero de version que ya tenia
-            if(serverVersion!=null){
-                helper = new SQLiteHelper(this, Integer.parseInt(serverVersion));
-                //No encontre otra forma de actualizar que haciendo un get
-                //Se va a actualizar si la version del server es mayor a la de la DB local
-                helper.getReadableDatabase();
-                Toast.makeText(this, "La base de datos ha sido actualizada!", Toast.LENGTH_LONG).show();
-            }
-            /*
-            Un ejemplo básico de una consulta (SELECT Cantidad FROM tagrec)
-            PARA SQL PURO USAR .rawQuery
-
-            String[] col ={"Cantidad"};
-            Cursor c = db.query(SQLiteHelper.TABLES[4],col,null,null,null,null,null);
-            while(!c.isLast()){
-                c.moveToNext();
-                for(int i =0; i<c.getColumnCount();i++){
-                    TextView tv = new TextView(this);
-                    tv.setText(""+c.getFloat(i));
-                    layout.addView(tv);
-                }
-            }
-            c.close();*/
-        } catch (InterruptedException | ExecutionException e) {
-            Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
-            e.printStackTrace();
-        }
 
         mNavigationDrawerFragment = (NavigationDrawerFragment)
                 getSupportFragmentManager().findFragmentById(com.ort.smartacc.R.id.navigation_drawer);
@@ -77,6 +64,22 @@ public class MainActivity extends AppCompatActivity
         mNavigationDrawerFragment.setUp(
                 com.ort.smartacc.R.id.navigation_drawer,
                 (DrawerLayout) findViewById(com.ort.smartacc.R.id.drawer_layout));
+
+        //Hago un request al servidor para conseguir la version de la DB
+        RequestTask versionTask= (RequestTask) new RequestTask(MainActivity.this).execute(Util.SERVER_URL + "json/version.php");
+
+        try {
+            String serverVersion = versionTask.get();
+            SQLiteHelper helper;
+            //Si la version es null es porque hubo internet, uso el numero de version que ya tenia
+            if(serverVersion!=null){
+                dataBase = new SQLiteHelper(MainActivity.this, Integer.parseInt(serverVersion)).getReadableDatabase();
+            } else{
+                dataBase = new SQLiteHelper(MainActivity.this, SQLiteHelper.getVersion(MainActivity.this)).getReadableDatabase();
+            }
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -177,5 +180,4 @@ public class MainActivity extends AppCompatActivity
                     getArguments().getInt(ARG_SECTION_NUMBER));
         }
     }
-
 }
