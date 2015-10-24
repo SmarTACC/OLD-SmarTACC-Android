@@ -13,7 +13,7 @@ public class Util {
      * Dirección básica del servidor.
      */
     //TODO: cambiar esto por la url de ORT
-    static String SERVER_URL = "http://santiaranguri.com/smartacc/";
+    static String SERVER_URL = "http://santiaranguri.com/";
     /**
      * Función que verifica el poder conectarse a internet
      * @param ctx El contexto usado para conseguir el servicio para checkear el estado de la red.

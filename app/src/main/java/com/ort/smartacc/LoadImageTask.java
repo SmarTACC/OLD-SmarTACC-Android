@@ -14,14 +14,16 @@ import java.io.InputStream;
 public class LoadImageTask extends AsyncTask<String, Void, Bitmap> {
     Context context;
     ImageView bmImage;
+    OnReadyCallback callback;
 
     /**
      * Constructor
      * @param bmImage ImageView a llenar.
      */
-    public LoadImageTask(Context context,ImageView bmImage) {
+    public LoadImageTask(Context context,ImageView bmImage, OnReadyCallback callback) {
         this.context = context;
         this.bmImage = bmImage;
+        this.callback = callback;
     }
 
     /**
@@ -49,7 +51,13 @@ public class LoadImageTask extends AsyncTask<String, Void, Bitmap> {
      * @param result Bitmap conseguido del servidor, null en caso de no poder conectar.
      */
     protected void onPostExecute(Bitmap result) {
-        if(result!=null)
+        if(result!=null) {
             bmImage.setImageBitmap(result);
+            callback.saveBitmap(result);
+        }
+    }
+
+    interface OnReadyCallback{
+        void saveBitmap(Bitmap bitmap);
     }
 }

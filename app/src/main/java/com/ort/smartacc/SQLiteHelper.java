@@ -126,7 +126,7 @@ public class SQLiteHelper extends SQLiteOpenHelper{
                         e.printStackTrace();
                     }
                 }
-            }).execute(Util.SERVER_URL+"json/" + TABLE + ".php");
+            }).execute(Util.SERVER_URL+"smartacc/json/" + TABLE + ".php");
         }
     }
     public static int getVersion(Context context){
