@@ -20,7 +20,7 @@ public class SQLiteHelper extends SQLiteOpenHelper{
     /**
      * Nombres de las tablas
      */
-    public static String[] TABLES = {"recetas", "tags", "ingredientes", "tagrec", "ingrec"};
+    public static String[] TABLES = {"recetas", "tags", "ingredientes", "tagrec", "ingrec","lugares"};
     /**
      * Strings para crear las tablas
      * Los valores son int, excepto:Texto, Imagen, Nombre, Unidad (son String) y Cantidad (es float)
@@ -52,6 +52,14 @@ public class SQLiteHelper extends SQLiteOpenHelper{
             "  `Cantidad` float NOT NULL," +
             "  `Unidad` varchar(30) NOT NULL," +
             "  `IDIngrec` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT" +
+            ");",
+            "CREATE TABLE IF NOT EXISTS `lugares` (" +
+            "  `idLugar` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT," +
+            "  `lat` REAL NOT NULL," +
+            "  `lon` REAL NOT NULL," +
+            "  `name` varchar(20) NOT NULL," +
+            "  `address` varchar(128) NOT NULL," +
+            "  `description` varchar(512) NOT NULL" +
             ")"};
     /**
      * Context usado para distintas acciones.
@@ -110,9 +118,14 @@ public class SQLiteHelper extends SQLiteOpenHelper{
                                         case "Imagen":
                                         case "Nombre":
                                         case "Unidad":
+                                        case "name":
+                                        case "address":
+                                        case "description":
                                             values.put(name, objRecetas.getString(name));
                                             break;
                                         case "Cantidad":
+                                        case "lat":
+                                        case "lon":
                                             values.put(name, objRecetas.getDouble(name));
                                             break;
                                         default:

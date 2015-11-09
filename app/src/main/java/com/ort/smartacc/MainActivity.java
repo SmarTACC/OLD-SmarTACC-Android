@@ -10,6 +10,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.SupportMapFragment;
+
 
 public class MainActivity extends AppCompatActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks,
@@ -67,6 +69,12 @@ public class MainActivity extends AppCompatActivity
                                     Integer.parseInt(response) :
                                     SQLiteHelper.getVersion(MainActivity.this)).getReadableDatabase();
                     Toast.makeText(MainActivity.this, "Database ready", Toast.LENGTH_SHORT).show();
+                    /*
+                    //Para cargar el fragment del mapa, hacerlo asi:
+                    SupportMapFragment mapFragment = new SupportMapFragment();
+                    getSupportFragmentManager().beginTransaction().add(R.id.container,mapFragment).commit();
+                    mapFragment.getMapAsync(new MapCallback(MainActivity.this));
+                    */
                     RecetaFragment recetas = new RecetaFragment();
                     Bundle bundle = new Bundle();
                     bundle.putInt(RecetaFragment.KEY_ID_RECETA, 131);
