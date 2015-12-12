@@ -6,6 +6,7 @@
 
         <item name="app_name">SmarTACC</item>
 
+<<<<<<< HEAD
         <item>Inicio</item>
         <item>Recetas</item>
         <item>Recetario</item>
@@ -17,3 +18,24 @@
     <string name="drawer_open">Open navigation drawer</string>
     <string name="drawer_close">Close navigation drawer</string>
 </resources>
+=======
+    <string name="action_example">Example action</string>
+
+    <string name="action_settings">Settings</string>
+
+<!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="formato_ingrediente_sin_cantidad">%1$s de %2$s</string>
+    <string name="formato_ingrediente_con_cantidad">%1$s %2$s de %3$s</string>
+
+    <string name="description_foto">Foto de la receta</string>
+    <string name="receta_titulo_ingredientes">Ingredientes:</string>
+    <string name="receta_titulo_categorias">Categorías:</string>
+    <string name="receta_titulo_preparacion">Preparación:</string>
+    <string name="mapa_info_direccion">Dirección: %1$s</string>
+    <string name="mapa_info_descipcion">Descripción: %1$s</string>
+    <string name="error404">Error 404</string>
+    <string name="title_activity_maps">Map</string>
+</resources>
+>>>>>>> origin/master

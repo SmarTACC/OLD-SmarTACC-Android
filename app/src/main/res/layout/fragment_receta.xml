@@ -1,0 +1,59 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_height="match_parent" android:layout_width="match_parent"
+    tools:context="com.ort.smartacc.RecetaFragment">
+    <LinearLayout
+        android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingTop="@dimen/activity_vertical_margin"
+        android:paddingBottom="@dimen/activity_vertical_margin"
+        android:orientation="vertical">
+
+        <TextView
+            android:textSize="@dimen/receta_titulo"
+            android:textStyle="bold"
+            android:id="@+id/receta_titulo"
+            android:layout_width="wrap_content" android:layout_height="wrap_content" />
+        <ImageView
+            android:id="@+id/receta_foto"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:scaleType="fitXY"
+            android:adjustViewBounds="true"
+            android:contentDescription="@string/description_foto" />
+        <TextView
+            android:textSize="@dimen/receta_subtitulo"
+            android:textStyle="bold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/receta_titulo_ingredientes"/>
+        <LinearLayout
+            android:id="@+id/receta_list_ingredientes"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" />
+        <TextView
+            android:textSize="@dimen/receta_subtitulo"
+            android:textStyle="bold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/receta_titulo_categorias" />
+        <LinearLayout
+            android:id="@+id/receta_list_categorias"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" />
+        <TextView
+            android:textSize="@dimen/receta_subtitulo"
+            android:textStyle="bold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/receta_titulo_preparacion" />
+        <TextView
+            android:id="@+id/receta_texto_preparacion"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
+</ScrollView>

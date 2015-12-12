@@ -10,17 +10,21 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Iterator;
-import java.util.concurrent.ExecutionException;
 
 public class SQLiteHelper extends SQLiteOpenHelper{
 
-    //Nombre de la base de datos
+    /**
+     * Nombre de la base de datos
+     */
     public static String DB_NAME = "smartacc";
-    //Nombres de las tablas
-    public static String[] TABLES = {"recetas", "tags", "ingredientes", "tagrec", "ingrec"};
-    //URL al servidor, TODO: cambiar esto por la url de ORT
-    static String SERVER_URL = "http://santiaranguri.com/smartacc/json/";
-    //Strings para crear las tablas
+    /**
+     * Nombres de las tablas
+     */
+    public static String[] TABLES = {"recetas", "tags", "ingredientes", "tagrec", "ingrec","lugares"};
+    /**
+     * Strings para crear las tablas
+     * Los valores son int, excepto:Texto, Imagen, Nombre, Unidad (son String) y Cantidad (es float)
+     */
     static String[] CREATE_TABLES ={"CREATE TABLE IF NOT EXISTS `recetas` (" +
             "  `IDRecetas` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT," +
             "  `Texto` varchar(2048) NOT NULL," +
@@ -48,10 +52,22 @@ public class SQLiteHelper extends SQLiteOpenHelper{
             "  `Cantidad` float NOT NULL," +
             "  `Unidad` varchar(30) NOT NULL," +
             "  `IDIngrec` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT" +
+            ");",
+            "CREATE TABLE IF NOT EXISTS `lugares` (" +
+            "  `idLugar` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT," +
+            "  `lat` REAL NOT NULL," +
+            "  `lon` REAL NOT NULL," +
+            "  `name` varchar(20) NOT NULL," +
+            "  `address` varchar(128) NOT NULL," +
+            "  `description` varchar(512) NOT NULL" +
             ")"};
-    //Los valores son int, excepto:Texto, Imagen, Nombre, Unidad (son String) y Cantidad (es float)
+    /**
+     * Context usado para distintas acciones.
+     */
+    Context context;
     public SQLiteHelper(Context context, int version) {
         super(context, DB_NAME, null, version);
+        this.context = context;
     }
 
     @Override
@@ -72,48 +88,58 @@ public class SQLiteHelper extends SQLiteOpenHelper{
         }
         update(db);
     }
-    static void update(SQLiteDatabase db){
+    void update(final SQLiteDatabase db){
         //Actualizo cada tabla
-        for(String TABLE : TABLES) {
+        for(final String TABLE : TABLES) {
             //Mando un requerimiento para conseguir esa tabla
-            RequestTask taskRecetas = (RequestTask) new RequestTask().execute(SERVER_URL + TABLE + ".php");
-            try {
-                //Consigo la respuesta
-                String response = taskRecetas.get();
-                if (response != null) {
-                    //Parseo la respuesta en JSON, formando un array de rows
-                    JSONArray array = new JSONArray(response);
+            new RequestTask(context, new RequestTask.OnReadyCallback() {
+                @Override
+                public void onReady(String response) {
+                    try{
+                        if (response != null) {
+                            //Parseo la respuesta en JSON, formando un array de rows
+                            JSONArray array = new JSONArray(response);
 
-                    //Recorro el array
-                    for (int i = 0; i < array.length(); i++) {
-                        //Consigo cada row, la cual va a tener varios pares de nombre:valor
-                        JSONObject objRecetas = array.getJSONObject(i);
-                        //El ContentValues se usa para insertar las columnas
-                        ContentValues values = new ContentValues();
-                        //Iterator para recorrer las columnas de la row
-                        Iterator<String> it = objRecetas.keys();
+                            //Recorro el array
+                            for (int i = 0; i < array.length(); i++) {
+                                //Consigo cada row, la cual va a tener varios pares de nombre:valor
+                                JSONObject objRecetas = array.getJSONObject(i);
+                                //El ContentValues se usa para insertar las columnas
+                                ContentValues values = new ContentValues();
+                                //Iterator para recorrer las columnas de la row
+                                Iterator<String> it = objRecetas.keys();
 
-                        //Recorro todos los pares de nombre:valor
-                        while (it.hasNext()) {
-                            String name = it.next();
+                                //Recorro todos los pares de nombre:valor
+                                while (it.hasNext()) {
+                                    String name = it.next();
 
-                            switch (name) {
-                                case "Texto":case "Imagen":case "Nombre":case "Unidad":
-                                    values.put(name, objRecetas.getString(name));
-                                    break;
-                                case "Cantidad":
-                                    values.put(name, objRecetas.getDouble(name));
-                                    break;
-                                default:
-                                    values.put(name, objRecetas.getInt(name));
+                                    switch (name) {
+                                        case "Texto":
+                                        case "Imagen":
+                                        case "Nombre":
+                                        case "Unidad":
+                                        case "name":
+                                        case "address":
+                                        case "description":
+                                            values.put(name, objRecetas.getString(name));
+                                            break;
+                                        case "Cantidad":
+                                        case "lat":
+                                        case "lon":
+                                            values.put(name, objRecetas.getDouble(name));
+                                            break;
+                                        default:
+                                            values.put(name, objRecetas.getInt(name));
+                                    }
+                                }
+                                db.insert(TABLE, null, values);
                             }
                         }
-                        db.insert(TABLE,null,values);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
                     }
                 }
-            } catch (JSONException | InterruptedException | ExecutionException e) {
-                e.printStackTrace();
-            }
+            }).execute(Util.SERVER_URL+"smartacc/json/" + TABLE + ".php");
         }
     }
     public static int getVersion(Context context){
