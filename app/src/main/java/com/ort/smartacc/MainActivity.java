@@ -13,6 +13,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.support.v4.widget.DrawerLayout;
 import android.widget.Toast;
+import android.content.res.Configuration;
+import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.ActionBarDrawerToggle;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+import android.database.Cursor;
 
 import java.util.concurrent.ExecutionException;
 
@@ -30,8 +38,51 @@ public class MainActivity extends AppCompatActivity
      */
     private CharSequence mTitle;
 
+
+    //NAVIGATION DRAWER - START
+    private String[] mPlanetTitles;
+    private DrawerLayout mDrawerLayout;
+    private ListView mDrawerList;
+
+    private class DrawerItemClickListener implements ListView.OnItemClickListener {
+        @Override
+        public void onItemClick(AdapterView parent, View view, int position, long id) {
+            selectItem(position);
+        }
+    }
+
+    /** Swaps fragments in the main content view */
+    private void selectItem(int position) {
+        // Create a new fragment and specify the planet to show based on position
+        Fragment fragment = new Drawer
+        Bundle args = new Bundle();
+        args.putInt(PlanetFragment.ARG_PLANET_NUMBER, position);
+        fragment.setArguments(args);
+
+        // Insert the fragment by replacing any existing fragment
+        FragmentManager fragmentManager = getFragmentManager();
+        fragmentManager.beginTransaction()
+                .replace(R.id.content_frame, fragment)
+                .commit();
+
+        // Highlight the selected item, update the title, and close the drawer
+        mDrawerList.setItemChecked(position, true);
+        setTitle(mPlanetTitles[position]);
+        mDrawerLayout.closeDrawer(mDrawerList);
+    }
+
+    @Override
+    public void setTitle(CharSequence title) {
+        mTitle = title;
+        getActionBar().setTitle(mTitle);
+    }
+
+    //NAVIGATION DRAWER - END
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+
         super.onCreate(savedInstanceState);
         setContentView(com.ort.smartacc.R.layout.activity_drawer);
 
@@ -49,9 +100,10 @@ public class MainActivity extends AppCompatActivity
                 helper.getReadableDatabase();
                 Toast.makeText(this, "La base de datos ha sido actualizada!", Toast.LENGTH_LONG).show();
             }
+
             /*
-            Un ejemplo básico de una consulta (SELECT Cantidad FROM tagrec)
-            PARA SQL PURO USAR .rawQuery
+            //Un ejemplo básico de una consulta (SELECT Cantidad FROM tagrec)
+            //PARA SQL PURO USAR .rawQuery
 
             String[] col ={"Cantidad"};
             Cursor c = db.query(SQLiteHelper.TABLES[4],col,null,null,null,null,null);
@@ -68,6 +120,19 @@ public class MainActivity extends AppCompatActivity
             Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
             e.printStackTrace();
         }
+
+        //NAVIGATION DRAWER - START
+        mPlanetTitles = getResources().getStringArray(R.array.navigationContents);
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        mDrawerList = (ListView) findViewById(R.id.left_drawer);
+
+        // Set the adapter for the list view
+        mDrawerList.setAdapter(new ArrayAdapter<String>(this,
+                R.layout.fragment_drawer, mPlanetTitles));
+        // Set the list's click listener
+        mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
+
+        //NAVIGATION DRAWER - END
 
         mNavigationDrawerFragment = (NavigationDrawerFragment)
                 getSupportFragmentManager().findFragmentById(com.ort.smartacc.R.id.navigation_drawer);
