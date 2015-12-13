@@ -2,8 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/SmarTACC.iml" filepath="$PROJECT_DIR$/SmarTACC.iml" />
-      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/SmarTACC-652ea65d8dc9839074b3f84ef36c3f09188d4141.iml" filepath="$PROJECT_DIR$/SmarTACC-652ea65d8dc9839074b3f84ef36c3f09188d4141.iml" />
     </modules>
   </component>
 </project>

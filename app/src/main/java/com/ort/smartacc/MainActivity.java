@@ -9,14 +9,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
-import android.content.res.Configuration;
-import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
-import android.support.v7.app.ActionBarDrawerToggle;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
-import android.database.Cursor;
 
 import com.google.android.gms.maps.SupportMapFragment;
 
@@ -50,108 +42,14 @@ public class MainActivity extends AppCompatActivity
      */
     SQLiteDatabase dataBase;
 
-
-    //NAVIGATION DRAWER - START
-    private String[] mPlanetTitles;
-    private DrawerLayout mDrawerLayout;
-    private ListView mDrawerList;
-
-    private class DrawerItemClickListener implements ListView.OnItemClickListener {
-        @Override
-        public void onItemClick(AdapterView parent, View view, int position, long id) {
-            selectItem(position);
-        }
-    }
-
-    /** Swaps fragments in the main content view */
-    private void selectItem(int position) {
-        // Create a new fragment and specify the planet to show based on position
-        Fragment fragment = new Drawer
-        Bundle args = new Bundle();
-        args.putInt(PlanetFragment.ARG_PLANET_NUMBER, position);
-        fragment.setArguments(args);
-
-        // Insert the fragment by replacing any existing fragment
-        FragmentManager fragmentManager = getFragmentManager();
-        fragmentManager.beginTransaction()
-                .replace(R.id.content_frame, fragment)
-                .commit();
-
-        // Highlight the selected item, update the title, and close the drawer
-        mDrawerList.setItemChecked(position, true);
-        setTitle(mPlanetTitles[position]);
-        mDrawerLayout.closeDrawer(mDrawerList);
-    }
-
-    @Override
-    public void setTitle(CharSequence title) {
-        mTitle = title;
-        getActionBar().setTitle(mTitle);
-    }
-
-    //NAVIGATION DRAWER - END
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
-
         super.onCreate(savedInstanceState);
         setContentView(com.ort.smartacc.R.layout.activity_drawer);
 
-<<<<<<< HEAD
-        //Hago un request al servidor para conseguir la version de la DB
-        RequestTask versionTask= (RequestTask) new RequestTask().execute(SQLiteHelper.SERVER_URL + "version.php");
-
-        try {
-            String serverVersion = versionTask.get();
-            SQLiteHelper helper;
-            //Si la version es null es porque hubo internet, uso el numero de version que ya tenia
-            if(serverVersion!=null){
-                helper = new SQLiteHelper(this, Integer.parseInt(serverVersion));
-                //No encontre otra forma de actualizar que haciendo un get
-                //Se va a actualizar si la version del server es mayor a la de la DB local
-                helper.getReadableDatabase();
-                Toast.makeText(this, "La base de datos ha sido actualizada!", Toast.LENGTH_LONG).show();
-            }
-
-            /*
-            //Un ejemplo básico de una consulta (SELECT Cantidad FROM tagrec)
-            //PARA SQL PURO USAR .rawQuery
-
-            String[] col ={"Cantidad"};
-            Cursor c = db.query(SQLiteHelper.TABLES[4],col,null,null,null,null,null);
-            while(!c.isLast()){
-                c.moveToNext();
-                for(int i =0; i<c.getColumnCount();i++){
-                    TextView tv = new TextView(this);
-                    tv.setText(""+c.getFloat(i));
-                    layout.addView(tv);
-                }
-            }
-            c.close();*/
-        } catch (InterruptedException | ExecutionException e) {
-            Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
-            e.printStackTrace();
-        }
-
-        //NAVIGATION DRAWER - START
-        mPlanetTitles = getResources().getStringArray(R.array.navigationContents);
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        mDrawerList = (ListView) findViewById(R.id.left_drawer);
-
-        // Set the adapter for the list view
-        mDrawerList.setAdapter(new ArrayAdapter<String>(this,
-                R.layout.fragment_drawer, mPlanetTitles));
-        // Set the list's click listener
-        mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
-
-        //NAVIGATION DRAWER - END
-
-=======
         /*
           Fragment managing the behaviors, interactions and presentation of the navigation drawer.
          */
->>>>>>> origin/master
         mNavigationDrawerFragment = (NavigationDrawerFragment)
                 getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
         mTitle = getTitle();
